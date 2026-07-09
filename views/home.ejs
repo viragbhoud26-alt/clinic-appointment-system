@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XYZ Clinic — Compassionate Care, Modern Scheduling</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="landing-header">
+    <p class="brand">XYZ Clinic<span class="brand-tag">Appointment System</span></p>
+    <a href="/login" class="btn-primary">Staff Login</a>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Now accepting new patients</p>
+    <h1 class="hero-title">Care that fits<br>your schedule.</h1>
+    <p class="hero-sub">XYZ Clinic keeps appointment scheduling simple for our staff and reliable for our patients — no double-bookings, no waiting on hold.</p>
+    <div class="hero-actions">
+      <a href="tel:+10000000000" class="btn-primary">Call to book: (000) 000-0000</a>
+      <a href="#doctors" class="btn-secondary">Meet our doctors</a>
+    </div>
+  </section>
+
+  <section id="doctors" class="doctors-section">
+    <p class="eyebrow">Our team</p>
+    <h2>Doctors currently seeing patients</h2>
+    <div class="doctor-grid">
+      <% if (doctors.length === 0) { %>
+        <p class="slots-hint">Doctor listings will appear here once added by staff.</p>
+      <% } %>
+      <% doctors.forEach(d => { %>
+      <div class="doctor-card">
+        <p class="doctor-name"><%= d.name %></p>
+        <p class="doctor-spec"><%= d.specialization %></p>
+        <p class="doctor-hours"><%= d.available_from.slice(0,5) %> – <%= d.available_to.slice(0,5) %></p>
+      </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="info-card">
+      <p class="eyebrow">Hours</p>
+      <p>Monday – Friday: 8:00 AM – 6:00 PM</p>
+      <p>Saturday: 9:00 AM – 1:00 PM</p>
+    </div>
+    <div class="info-card">
+      <p class="eyebrow">Location</p>
+      <p>123 Wellness Ave, Suite 4<br>Your City, ST 00000</p>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <p>© 2026 XYZ Clinic. Built as a DevOps modernization capstone project.</p>
+  </footer>
+</body>
+</html>

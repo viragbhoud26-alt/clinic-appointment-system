@@ -5,6 +5,7 @@ const appointmentsRouter = require('./routes/appointments');
 const patientsRouter = require('./routes/patients');
 const doctorsRouter = require('./routes/doctors');
 const authRouter = require('./routes/auth');
+const homeRouter = require('./routes/home');
 const requireLogin = require('./middleware/auth');
 
 const app = express();
@@ -20,7 +21,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 2 } // 2 hours
+  cookie: { maxAge: 1000 * 60 * 60 * 2 }
 }));
 
 app.use((req, res, next) => {
@@ -28,9 +29,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/', homeRouter);
 app.use('/', authRouter);
 
-app.get('/', (req, res) => res.redirect('/appointments'));
 app.use('/appointments', requireLogin, appointmentsRouter);
 app.use('/patients', requireLogin, patientsRouter);
 app.use('/doctors', requireLogin, doctorsRouter);
