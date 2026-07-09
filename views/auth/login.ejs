@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XYZ Clinic — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <p class="brand">XYZ Clinic<span class="brand-tag">Appointment System</span></p>
+    <h1 style="font-size:24px;margin-top:24px;">Staff Login</h1>
+    <% if (error) { %>
+      <p class="error-msg"><%= error %></p>
+    <% } %>
+    <form action="/login" method="POST">
+      <label>Username</label>
+      <input name="username" required autofocus>
+      <label>Password</label>
+      <input name="password" type="password" required>
+      <button type="submit" style="margin-top:20px;">Log in</button>
+    </form>
+  </div>
+</body>
+</html>

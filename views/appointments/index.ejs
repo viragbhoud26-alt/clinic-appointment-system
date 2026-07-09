@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XYZ Clinic — Appointments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <p class="eyebrow">Schedule</p>
+  <div class="page-header-row">
+    <h1>Appointments</h1>
+    <a href="/appointments/new" class="btn-primary">+ Book appointment</a>
+  </div>
+  <table>
+    <tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Specialization</th><th>Status</th><th>Actions</th></tr>
+    <% appointments.forEach(a => { %>
+    <tr>
+      <td><%= a.appointment_date.toISOString().split('T')[0] %></td>
+      <td><%= a.appointment_time %></td>
+      <td><%= a.patient_name %></td>
+      <td><%= a.doctor_name %></td>
+      <td><%= a.specialization %></td>
+      <td><span class="pill pill-<%= a.status %>"><%= a.status %></span></td>
+      <td>
+        <% if (a.status === 'booked') { %>
+        <form action="/appointments/<%= a.id %>/cancel" method="POST" style="display:inline">
+          <button type="submit" class="btn-danger">Cancel</button>
+        </form>
+        <% } %>
+      </td>
+    </tr>
+    <% }) %>
+  </table>
+</body>
+</html>

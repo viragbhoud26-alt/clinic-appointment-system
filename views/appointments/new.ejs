@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XYZ Clinic — Book Appointment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <p class="eyebrow">Schedule</p>
+  <h1>Book Appointment</h1>
+  <form id="booking-form" action="/appointments" method="POST">
+    <label>Patient</label>
+    <select name="patient_id" required>
+      <% patients.forEach(p => { %><option value="<%= p.id %>"><%= p.name %></option><% }) %>
+    </select>
+
+    <label>Doctor</label>
+    <select name="doctor_id" id="doctor-select" required>
+      <option value="">-- choose a doctor --</option>
+      <% doctors.forEach(d => { %><option value="<%= d.id %>"><%= d.name %> (<%= d.specialization %>)</option><% }) %>
+    </select>
+
+    <label>Date</label>
+    <input name="appointment_date" id="date-input" type="date" required>
+
+    <label>Available times</label>
+    <div id="slots-container" class="slots-grid">
+      <p class="slots-hint">Select a doctor and date to see available times.</p>
+    </div>
+
+    <input type="hidden" name="appointment_time" id="selected-time" required>
+    <button type="submit" id="book-btn" disabled>Book</button>
+  </form>
+  <a href="/appointments" class="back-link">← Back</a>
+
+  <script>
+    const doctorSelect = document.getElementById('doctor-select');
+    const dateInput = document.getElementById('date-input');
+    const slotsContainer = document.getElementById('slots-container');
+    const selectedTimeInput = document.getElementById('selected-time');
+    const bookBtn = document.getElementById('book-btn');
+
+    async function loadSlots() {
+      const doctorId = doctorSelect.value;
+      const date = dateInput.value;
+      selectedTimeInput.value = '';
+      bookBtn.disabled = true;
+
+      if (!doctorId || !date) {
+        slotsContainer.innerHTML = '<p class="slots-hint">Select a doctor and date to see available times.</p>';
+        return;
+      }
+      slotsContainer.innerHTML = '<p class="slots-hint">Loading available times...</p>';
+
+      try {
+        const res = await fetch('/appointments/available-slots?doctor_id=' + doctorId + '&date=' + date);
+        const data = await res.json();
+
+        if (!data.slots || data.slots.length === 0) {
+          slotsContainer.innerHTML = '<p class="slots-hint">No slots configured for this doctor.</p>';
+          return;
+        }
+
+        slotsContainer.innerHTML = '';
+        data.slots.forEach(slot => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = slot.time;
+          btn.className = 'slot-btn' + (slot.available ? '' : ' slot-taken');
+          if (!slot.available) {
+            btn.disabled = true;
+          } else {
+            btn.onclick = () => {
+              document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('slot-selected'));
+              btn.classList.add('slot-selected');
+              selectedTimeInput.value = slot.time;
+              bookBtn.disabled = false;
+            };
+          }
+          slotsContainer.appendChild(btn);
+        });
+      } catch (err) {
+        slotsContainer.innerHTML = '<p class="slots-hint">Could not load times. Try again.</p>';
+      }
+    }
+
+    doctorSelect.addEventListener('change', loadSlots);
+    dateInput.addEventListener('change', loadSlots);
+  </script>
+</body>
+</html>

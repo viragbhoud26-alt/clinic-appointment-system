@@ -1,0 +1,16 @@
+<nav>
+  <a href="/appointments" class="brand">
+    XYZ Clinic
+    <span class="brand-tag">Appointment System</span>
+  </a>
+  <div class="nav-links">
+    <a href="/appointments">Appointments</a>
+    <a href="/patients">Patients</a>
+    <a href="/doctors">Doctors</a>
+    <% if (typeof isLoggedIn !== 'undefined' && isLoggedIn) { %>
+      <form action="/logout" method="POST" style="display:inline;">
+        <button type="submit" class="btn-danger" style="margin-left:6px;">Log out</button>
+      </form>
+    <% } %>
+  </div>
+</nav>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XYZ Clinic — Add Doctor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <p class="eyebrow">Staff</p>
+  <h1>Add Doctor</h1>
+  <form action="/doctors" method="POST">
+    <label>Full name</label>
+    <input name="name" placeholder="Full name" required>
+    <label>Specialization</label>
+    <input name="specialization" placeholder="Specialization">
+    <label>Available from</label>
+    <input name="available_from" type="time" required>
+    <label>Available to</label>
+    <input name="available_to" type="time" required>
+    <button type="submit" style="margin-top:20px;">Save</button>
+  </form>
+  <a href="/doctors" class="back-link">← Back</a>
+</body>
+</html>

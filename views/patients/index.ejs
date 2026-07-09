@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patients</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <h1>Patients</h1>
+  <a href="/patients/new">+ Add Patient</a>
+  <table>
+    <tr><th>Name</th><th>Phone</th><th>Email</th><th>Date of Birth</th></tr>
+    <% patients.forEach(p => { %>
+    <tr>
+      <td><%= p.name %></td>
+      <td><%= p.phone %></td>
+      <td><%= p.email %></td>
+      <td><%= p.date_of_birth ? p.date_of_birth.toISOString().split('T')[0] : '' %></td>
+    </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
