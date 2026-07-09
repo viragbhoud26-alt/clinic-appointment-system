@@ -1,58 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>XYZ Clinic — Compassionate Care, Modern Scheduling</title>
+  <title>XYZ Clinic — Medicine, delivered with intention</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/landing-dark.css">
 </head>
-<body>
-  <header class="landing-header">
-    <p class="brand">XYZ Clinic<span class="brand-tag">Appointment System</span></p>
-    <a href="/login" class="btn-primary">Staff Login</a>
-  </header>
-
-  <section class="hero">
-    <p class="eyebrow">Now accepting new patients</p>
-    <h1 class="hero-title">Care that fits<br>your schedule.</h1>
-    <p class="hero-sub">XYZ Clinic keeps appointment scheduling simple for our staff and reliable for our patients — no double-bookings, no waiting on hold.</p>
-    <div class="hero-actions">
-      <a href="tel:+10000000000" class="btn-primary">Call to book: (000) 000-0000</a>
-      <a href="#doctors" class="btn-secondary">Meet our doctors</a>
-    </div>
-  </section>
-
-  <section id="doctors" class="doctors-section">
-    <p class="eyebrow">Our team</p>
-    <h2>Doctors currently seeing patients</h2>
-    <div class="doctor-grid">
-      <% if (doctors.length === 0) { %>
-        <p class="slots-hint">Doctor listings will appear here once added by staff.</p>
-      <% } %>
-      <% doctors.forEach(d => { %>
-      <div class="doctor-card">
-        <p class="doctor-name"><%= d.name %></p>
-        <p class="doctor-spec"><%= d.specialization %></p>
-        <p class="doctor-hours"><%= d.available_from.slice(0,5) %> – <%= d.available_to.slice(0,5) %></p>
+<body class="dark-theme">
+  <div class="dc-wrap">
+    <nav class="dc-nav">
+      <a href="/" class="dc-logo">
+        <span class="dc-logo-mark">X</span>
+        <span class="dc-brand">XYZ <span>Clinic</span></span>
+      </a>
+      <div class="dc-links">
+        <a href="/#specialties">Specialties</a>
+        <a href="/#visit">Contact</a>
       </div>
-      <% }) %>
-    </div>
-  </section>
+      <a href="/login" class="dc-btn-outline">Staff Login</a>
+    </nav>
 
-  <section class="info-section">
-    <div class="info-card">
-      <p class="eyebrow">Hours</p>
-      <p>Monday – Friday: 8:00 AM – 6:00 PM</p>
-      <p>Saturday: 9:00 AM – 1:00 PM</p>
-    </div>
-    <div class="info-card">
-      <p class="eyebrow">Location</p>
-      <p>123 Wellness Ave, Suite 4<br>Your City, ST 00000</p>
-    </div>
-  </section>
+    <section class="dc-hero">
+      <p class="dc-eyebrow">Appointment scheduling · Modernized</p>
+      <h1>Scheduling,<br>handled with <em>care</em>.</h1>
+      <p>XYZ Clinic keeps appointment scheduling simple for our staff and reliable for our patients — real-time availability, and no double-bookings, ever.</p>
+      <div class="dc-hero-actions">
+        <a href="tel:+10000000000" class="dc-btn-gold">Call to book: (000) 000-0000</a>
+        <a href="#specialties" class="dc-btn-outline">See our doctors</a>
+      </div>
+    </section>
 
-  <footer class="landing-footer">
-    <p>© 2026 XYZ Clinic. Built as a DevOps modernization capstone project.</p>
-  </footer>
+    <section class="dc-section" id="specialties">
+      <div class="dc-section-head">
+        <div>
+          <p class="dc-eyebrow">Our team</p>
+          <h2>One schedule.<br>Every specialty.</h2>
+        </div>
+        <p>Live availability across every doctor currently seeing patients.</p>
+      </div>
+      <div class="spec-grid">
+        <% if (doctors.length === 0) { %>
+          <p style="color:var(--muted);">Doctor listings will appear here once added by staff.</p>
+        <% } %>
+        <% doctors.forEach((d, i) => { %>
+        <div class="spec-card">
+          <p class="spec-num"><%= String(i + 1).padStart(2, '0') %></p>
+          <h3><%= d.name %></h3>
+          <p><%= d.specialization %> — seeing patients <%= d.available_from.slice(0,5) %>–<%= d.available_to.slice(0,5) %>.</p>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="dc-section">
+      <div class="dc-cta">
+        <p class="dc-eyebrow">New patients welcome</p>
+        <h2>A calmer way to book<br>starts with <em>one call</em>.</h2>
+        <div class="dc-cta-actions">
+          <a href="tel:+10000000000" class="dc-btn-gold">Call to book: (000) 000-0000</a>
+          <a href="/login" class="dc-btn-outline">Staff Login</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="dc-footer" id="visit">
+      <div>
+        <p class="dc-brand" style="font-size:20px;">XYZ <span>Clinic</span></p>
+        <p style="max-width:260px;margin-top:10px;">A multi-specialty practice built around considered care and clinicians who listen.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p>123 Wellness Ave, Suite 4<br>Your City, ST 00000<br>Open Mon–Sat, 8am–6pm</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>(000) 000-0000<br>care@xyzclinic.health</p>
+        <a href="/login" class="gold-link">Staff login →</a>
+      </div>
+    </footer>
+    <div class="dc-footer-bottom">
+      <span>© 2026 XYZ Clinic. Built as a DevOps modernization capstone project.</span>
+      <span>Demo application — not a real medical practice.</span>
+    </div>
+  </div>
 </body>
 </html>

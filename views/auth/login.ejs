@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>XYZ Clinic — Login</title>
+  <title>XYZ Clinic — Staff Sign In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/landing-dark.css">
 </head>
-<body>
-  <div class="login-wrap">
-    <p class="brand">XYZ Clinic<span class="brand-tag">Appointment System</span></p>
-    <h1 style="font-size:24px;margin-top:24px;">Staff Login</h1>
-    <% if (error) { %>
-      <p class="error-msg"><%= error %></p>
-    <% } %>
-    <form action="/login" method="POST">
-      <label>Username</label>
-      <input name="username" required autofocus>
-      <label>Password</label>
-      <input name="password" type="password" required>
-      <button type="submit" style="margin-top:20px;">Log in</button>
-    </form>
+<body class="dark-theme">
+  <div class="login-split">
+    <div class="login-left">
+      <a href="/" class="dc-logo">
+        <span class="dc-logo-mark">X</span>
+        <span class="dc-brand">XYZ <span>Clinic</span></span>
+      </a>
+      <div>
+        <p class="dc-eyebrow" style="margin-top:40px;">Staff portal</p>
+        <h2>Scheduling,<br>made <em>quiet</em>.</h2>
+      </div>
+    </div>
+    <div class="login-right">
+      <p class="dc-eyebrow">Welcome back</p>
+      <h1>Sign in</h1>
+      <p>Access the XYZ Clinic staff dashboard.</p>
+
+      <% if (error) { %>
+        <p class="dc-error"><%= error %></p>
+      <% } %>
+
+      <form action="/login" method="POST">
+        <label class="dc-label">Username</label>
+        <input class="dc-input" name="username" required autofocus>
+        <label class="dc-label">Password</label>
+        <input class="dc-input" name="password" type="password" required>
+        <button type="submit" class="dc-btn-gold dc-submit">Sign in</button>
+      </form>
+    </div>
   </div>
 </body>
 </html>

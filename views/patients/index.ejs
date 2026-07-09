@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Patients</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>XYZ Clinic — Patients</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/landing-dark.css">
 </head>
-<body>
-  <%- include('../partials/nav') %>
-  <h1>Patients</h1>
-  <a href="/patients/new">+ Add Patient</a>
-  <table>
-    <tr><th>Name</th><th>Phone</th><th>Email</th><th>Date of Birth</th></tr>
-    <% patients.forEach(p => { %>
-    <tr>
-      <td><%= p.name %></td>
-      <td><%= p.phone %></td>
-      <td><%= p.email %></td>
-      <td><%= p.date_of_birth ? p.date_of_birth.toISOString().split('T')[0] : '' %></td>
-    </tr>
-    <% }) %>
-  </table>
+<body class="dark-theme">
+  <div class="dc-wrap">
+    <%- include('../partials/nav') %>
+    <p class="dc-eyebrow">Records</p>
+    <div class="dc-page-header">
+      <h1 class="dc-page-title">Patients</h1>
+      <a href="/patients/new" class="dc-btn-gold">+ Add patient</a>
+    </div>
+    <div class="dc-table-wrap">
+      <table class="dc-table">
+        <tr><th>Name</th><th>Phone</th><th>Email</th><th>Date of birth</th></tr>
+        <% patients.forEach(p => { %>
+        <tr>
+          <td><%= p.name %></td>
+          <td><%= p.phone %></td>
+          <td><%= p.email %></td>
+          <td><%= p.date_of_birth ? p.date_of_birth.toISOString().split('T')[0] : '' %></td>
+        </tr>
+        <% }) %>
+      </table>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,15 +1,15 @@
-<nav>
-  <a href="/appointments" class="brand">
-    XYZ Clinic
-    <span class="brand-tag">Appointment System</span>
+<nav class="dc-nav dc-nav-dash">
+  <a href="/appointments" class="dc-logo">
+    <span class="dc-logo-mark">X</span>
+    <span class="dc-brand">XYZ <span>Clinic</span></span>
   </a>
-  <div class="nav-links">
+  <div class="dc-links" style="align-items:center;">
     <a href="/appointments">Appointments</a>
     <a href="/patients">Patients</a>
     <a href="/doctors">Doctors</a>
     <% if (typeof isLoggedIn !== 'undefined' && isLoggedIn) { %>
-      <form action="/logout" method="POST" style="display:inline;">
-        <button type="submit" class="btn-danger" style="margin-left:6px;">Log out</button>
+      <form action="/logout" method="POST" style="display:inline; margin-left:8px;">
+        <button type="submit" class="dc-btn-danger">Log out</button>
       </form>
     <% } %>
   </div>
