@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    container_name: clinic-app
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: clinicuser
+      DB_PASSWORD: clinicpass123
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: clinicdb
+      SESSION_SECRET: a-long-random-string-change-this
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: clinic-postgres
+    environment:
+      POSTGRES_USER: clinicuser
+      POSTGRES_PASSWORD: clinicpass123
+      POSTGRES_DB: clinicdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+
+volumes:
+  pgdata:
