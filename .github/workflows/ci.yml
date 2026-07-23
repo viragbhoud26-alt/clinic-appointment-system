@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and start full stack
+        run: docker compose up -d --build
+
+      - name: Wait for app to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:3000/ > /dev/null; then
+              echo "App is ready"
+              exit 0
+            fi
+            echo "Waiting for app... ($i/30)"
+            sleep 2
+          done
+          echo "App did not become ready in time"
+          docker compose logs
+          exit 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run smoke tests
+        run: npm test
+        env:
+          SMOKE_TEST_URL: http://localhost:3000
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
