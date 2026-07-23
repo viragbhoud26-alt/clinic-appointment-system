@@ -17,3 +17,15 @@
 | P4-DOCKER-01-flyway-service | Flyway service definition | `docker-compose.yml` | Runs migrations against `db`, depends on `service_healthy` |
 | P4-DOCKER-02-db-seed-service | db-seed service definition | `docker-compose.yml` | Runs `01-init.sql` via `psql`, depends on Flyway's `service_completed_successfully` |
 | P4-DOCKER-03-db-healthcheck | Postgres healthcheck config | `docker-compose.yml` | `pg_isready` check; required for `service_healthy` condition to function |
+
+## Phase 5: CI/CD Pipeline (GitHub Actions)
+
+| Artifact ID | Description | File Path | Notes |
+|---|---|---|---|
+| P5-CI-01-github-actions-workflow | CI workflow definition | `.github/workflows/ci.yml` | Triggers on push/PR to main; builds full docker compose stack and runs smoke tests |
+| P5-CI-02-readiness-check | App readiness polling step | `.github/workflows/ci.yml` | Polls `http://localhost:3000/` with timeout instead of fixed sleep, accounting for variable CI runner speed |
+| P5-CI-03-failure-log-dump | Conditional failure logging step | `.github/workflows/ci.yml` | Dumps `docker compose logs` only on failure for debugging directly from GitHub Actions UI |
+| P5-CI-04-teardown-always | Guaranteed teardown step | `.github/workflows/ci.yml` | `docker compose down -v` runs via `if: always()` to prevent orphaned containers on failed runs |
+| P5-APP-01-jest-smoke-tests | Smoke test suite | `tests/smoke.test.js` | Verifies landing page (200), login page (200), and auth-protected route redirect (302) against a live running stack |
+| P5-APP-02-jest-test-script | Test runner configuration | `package.json` | Replaced placeholder `test` script with `jest`; added `jest` as devDependency |
+| P5-DIAG-01-first-ci-run | First successful CI run | GitHub Actions run #1 | Passed on first attempt, 57s duration — full stack validated in a clean environment |
