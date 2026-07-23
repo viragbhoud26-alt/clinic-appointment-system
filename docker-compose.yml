@@ -12,7 +12,8 @@ services:
       DB_NAME: clinicdb
       SESSION_SECRET: a-long-random-string-change-this
     depends_on:
-      - db
+      db-seed:
+        condition: service_completed_successfully
 
   db:
     image: postgres:16
@@ -25,7 +26,31 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinicuser -d clinicdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: clinic-flyway
+    command: -url=jdbc:postgresql://db:5432/clinicdb -user=clinicuser -password=clinicpass123 -connectRetries=10 migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db-seed:
+    image: postgres:16
+    container_name: clinic-db-seed
+    entrypoint: ["psql", "postgresql://clinicuser:clinicpass123@db:5432/clinicdb", "-f", "/seed/01-init.sql"]
+    volumes:
+      - ./db/init:/seed
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:
