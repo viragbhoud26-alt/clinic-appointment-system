@@ -1,0 +1,40 @@
+apiVersion: v1
+data:
+  V1__create_pgcrypto_extension.sql: |
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;
+  V2__create_patients_table.sql: |
+    CREATE TABLE IF NOT EXISTS patients (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      phone VARCHAR(20),
+      email VARCHAR(100),
+      date_of_birth DATE
+    );
+  V3__create_doctors_table.sql: |
+    CREATE TABLE IF NOT EXISTS doctors (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      specialization VARCHAR(100),
+      available_from TIME NOT NULL,
+      available_to TIME NOT NULL
+    );
+  V4__create_appointments_table.sql: |
+    CREATE TABLE IF NOT EXISTS appointments (
+      id SERIAL PRIMARY KEY,
+      patient_id INTEGER REFERENCES patients(id),
+      doctor_id INTEGER REFERENCES doctors(id),
+      appointment_date DATE NOT NULL,
+      appointment_time TIME NOT NULL,
+      status VARCHAR(20) DEFAULT 'booked'
+    );
+  V5__create_admins_table.sql: |
+    CREATE TABLE IF NOT EXISTS admins (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(50) UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL
+    );
+  V6__add_notes_to_appointments.sql: |
+    ALTER TABLE appointments ADD COLUMN notes TEXT;
+kind: ConfigMap
+metadata:
+  name: clinic-migrations

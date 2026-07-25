@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clinic-db-seed
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-migrations
+          image: postgres:16
+          command:
+            - sh
+            - -c
+            - |
+              until psql "postgresql://$(DB_USER):$(DB_PASSWORD)@clinic-db:5432/clinicdb" -c "SELECT 1 FROM admins LIMIT 1" > /dev/null 2>&1; do
+                echo "Waiting for admins table to exist (Flyway not finished yet)..."
+                sleep 3
+              done
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: DB_PASSWORD
+      containers:
+        - name: seed
+          image: postgres:16
+          command:
+            - sh
+            - -c
+            - psql "postgresql://$(DB_USER):$(DB_PASSWORD)@clinic-db:5432/clinicdb" -f /seed/01-init.sql
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: seed
+              mountPath: /seed
+      volumes:
+        - name: seed
+          configMap:
+            name: clinic-seed
+  backoffLimit: 3

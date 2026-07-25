@@ -29,3 +29,22 @@
 | P5-APP-01-jest-smoke-tests | Smoke test suite | `tests/smoke.test.js` | Verifies landing page (200), login page (200), and auth-protected route redirect (302) against a live running stack |
 | P5-APP-02-jest-test-script | Test runner configuration | `package.json` | Replaced placeholder `test` script with `jest`; added `jest` as devDependency |
 | P5-DIAG-01-first-ci-run | First successful CI run | GitHub Actions run #1 | Passed on first attempt, 57s duration — full stack validated in a clean environment |
+
+## Phase 6: Kubernetes Orchestration (minikube)
+
+| Artifact ID | Description | File Path | Notes |
+|---|---|---|---|
+| P6-K8S-01-configmap | Non-sensitive app configuration | `k8s/configmap.yaml` | DB host, port, name, user — separated from secrets per K8s convention |
+| P6-K8S-02-secret | Sensitive credentials | `k8s/secret.yaml` | DB password and session secret; uses `stringData` for plain-text authoring |
+| P6-K8S-03-db-pvc | Database persistent storage | `k8s/db-pvc.yaml` | Replaces Compose's `pgdata` named volume; survives pod rescheduling |
+| P6-K8S-04-db-deployment | PostgreSQL deployment | `k8s/db-deployment.yaml` | Includes readinessProbe (`pg_isready`), equivalent to Compose healthcheck |
+| P6-K8S-05-db-service | Internal DB service | `k8s/db-service.yaml` | Provides stable DNS name `clinic-db` for other pods |
+| P6-K8S-06-migrations-configmap | Flyway migration files as ConfigMap | `k8s/migrations-configmap.yaml` | Generated via `kubectl create configmap --from-file` from `db/migrations/` |
+| P6-K8S-07-seed-configmap | Seed script as ConfigMap | `k8s/seed-configmap.yaml` | Generated via `kubectl create configmap --from-file` from `db/init/01-init.sql` |
+| P6-K8S-08-flyway-job | Flyway migration Job | `k8s/flyway-job.yaml` | One-shot Job; K8s equivalent of Compose's one-shot flyway service |
+| P6-K8S-09-db-seed-job | Seed data Job | `k8s/db-seed-job.yaml` | Init Container polls for `admins` table existence before seeding — self-verifying dependency, replaces `depends_on: service_completed_successfully` |
+| P6-K8S-10-app-deployment | Application deployment | `k8s/app-deployment.yaml` | Init Container polls for seed row before app starts; `imagePullPolicy: Never` uses locally loaded image |
+| P6-K8S-11-app-service | App NodePort service | `k8s/app-service.yaml` | Exposes app outside the cluster via `minikube service` tunnel |
+| P6-BUG-01-missing-configmap-apply | Debugging: Flyway stuck in ContainerCreating | N/A (process issue) | ConfigMaps generated with `--dry-run=client` were saved to file but never applied to the cluster; diagnosed via `kubectl describe pod` Events section |
+| P6-BUG-02-nested-command-substitution | Debugging: app Init Container auth failure | `k8s/app-deployment.yaml` | Nested `$(...)` inside `$(...)` broke Kubernetes' variable substitution for DB_USER/DB_PASSWORD in the wait-loop; fixed by restructuring the query to avoid outer command substitution; diagnosed via `kubectl logs -c wait-for-seed` |
+| P6-DIAG-01-k8s-smoke-test-pass | Smoke tests re-run against K8s deployment | N/A (verification step) | Same Jest suite from Phase 5 passed 3/3 against the app running in Kubernetes, confirming behavioral parity with the Compose deployment |

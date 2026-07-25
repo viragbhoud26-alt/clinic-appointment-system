@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clinic-flyway
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: flyway
+          image: flyway/flyway:10-alpine
+          args:
+            - -url=jdbc:postgresql://clinic-db:5432/clinicdb
+            - -user=$(DB_USER)
+            - -password=$(DB_PASSWORD)
+            - -connectRetries=10
+            - migrate
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: migrations
+              mountPath: /flyway/sql
+      volumes:
+        - name: migrations
+          configMap:
+            name: clinic-migrations
+  backoffLimit: 3

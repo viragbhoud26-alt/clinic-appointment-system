@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clinic-app
+  template:
+    metadata:
+      labels:
+        app: clinic-app
+    spec:
+      initContainers:
+        - name: wait-for-seed
+          image: postgres:16
+          command:
+            - sh
+            - -c
+            - |
+              until psql "postgresql://$(DB_USER):$(DB_PASSWORD)@clinic-db:5432/clinicdb" -tAc "SELECT 1 FROM admins LIMIT 1" | grep -q 1; do
+                echo "Waiting for admin seed data..."
+                sleep 3
+              done
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: DB_PASSWORD
+      containers:
+        - name: app
+          image: clinic-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clinic-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: DB_PASSWORD
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: clinic-secret
+                  key: SESSION_SECRET
