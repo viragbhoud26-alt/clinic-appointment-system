@@ -48,3 +48,15 @@
 | P6-BUG-01-missing-configmap-apply | Debugging: Flyway stuck in ContainerCreating | N/A (process issue) | ConfigMaps generated with `--dry-run=client` were saved to file but never applied to the cluster; diagnosed via `kubectl describe pod` Events section |
 | P6-BUG-02-nested-command-substitution | Debugging: app Init Container auth failure | `k8s/app-deployment.yaml` | Nested `$(...)` inside `$(...)` broke Kubernetes' variable substitution for DB_USER/DB_PASSWORD in the wait-loop; fixed by restructuring the query to avoid outer command substitution; diagnosed via `kubectl logs -c wait-for-seed` |
 | P6-DIAG-01-k8s-smoke-test-pass | Smoke tests re-run against K8s deployment | N/A (verification step) | Same Jest suite from Phase 5 passed 3/3 against the app running in Kubernetes, confirming behavioral parity with the Compose deployment |
+
+## Phase 7: Monitoring (Prometheus & Grafana)
+
+| Artifact ID | Description | File Path | Notes |
+|---|---|---|---|
+| P7-MON-01-prometheus-stack | Prometheus deployment with RBAC and three scrape jobs | `k8s/monitoring/prometheus-configmap.yaml`, `prometheus-deployment.yaml`, `prometheus-rbac.yaml`, `prometheus-service.yaml` | Scrape jobs: kube-state-metrics static target, annotation-filtered pod discovery, cAdvisor via K8s API proxy — all confirmed UP in Prometheus targets page |
+| P7-MON-02-kube-state-metrics | kube-state-metrics v2.10.1 deployment | `k8s/monitoring/kube-state-metrics-deployment.yaml`, `kube-state-metrics-rbac.yaml`, `kube-state-metrics-service.yaml` | ClusterIP only, internal scrape target; exposes pod/deployment state as Prometheus metrics |
+| P7-MON-03-grafana-deployment | Grafana deployment and service | `k8s/monitoring/grafana-deployment.yaml`, `grafana-service.yaml` | Admin credentials via Deployment env vars; no PVC by design — state is ephemeral and resets to defaults on pod restart |
+| P7-MON-04-grafana-datasource | Provisioned Prometheus datasource | `k8s/monitoring/grafana-datasource-configmap.yaml` | Auto-configured on pod start via ConfigMap mount; no manual UI setup required |
+| P7-MON-05-grafana-dashboard-provider | Dashboard provider configuration | `k8s/monitoring/grafana-dashboard-provider-configmap.yaml` | Enables Grafana to auto-load dashboards from mounted ConfigMaps on startup |
+| P7-MON-06-clinic-dashboard | "Clinic App Infrastructure" dashboard definition | `k8s/monitoring/dashboard.json`, `grafana-dashboards-configmap.yaml` | Four panels: Pod Status, CPU Usage per Pod, Memory Usage per Pod, Pod Restart Counts — all verified showing live data |
+| P7-BUG-01-cadvisor-container-label | Debugging: CPU/Memory panels showing no data | `k8s/monitoring/dashboard.json` | On this minikube/WSL2/Docker-driver setup, `container_cpu_usage_seconds_total` and `container_memory_usage_bytes` carry no `container` label; PromQL filters on `container!=""` silently returned zero results. Fixed by removing the filter from both panel queries; verified via Grafana UI after `grafana-dashboards-configmap.yaml` regeneration and `kubectl rollout restart` |
