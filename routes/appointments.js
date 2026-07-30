@@ -2,8 +2,33 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db/connection');
 
+const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:4000';
+
 function normalizeTime(t) {
   return t.length === 5 ? t + ':00' : t; // "14:30" -> "14:30:00"
+}
+
+// Fire-and-forget call to the Notification Service. Never awaited by the
+// caller — a booking must succeed even if the email fails to send or the
+// Notification Service is temporarily unreachable.
+function sendConfirmationEmail({ patient, doctorName, appointment_date, appointment_time }) {
+  if (!patient || !patient.email) {
+    console.warn('Skipping confirmation email: patient has no email on file');
+    return;
+  }
+  fetch(`${NOTIFICATION_SERVICE_URL}/notify/confirmation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      to: patient.email,
+      patientName: patient.name,
+      doctorName,
+      appointmentDate: appointment_date,
+      appointmentTime: appointment_time.slice(0, 5),
+    }),
+  }).catch(err => {
+    console.error('Failed to reach notification service:', err.message);
+  });
 }
 
 // NEW: returns available time slots for a doctor on a given date, as JSON
@@ -101,6 +126,16 @@ router.post('/', async (req, res) => {
        VALUES ($1, $2, $3, $4)`,
       [patient_id, doctor_id, appointment_date, appointment_time]
     );
+
+    // Confirmation email — fire-and-forget, does not block the response
+    const patient = await pool.query('SELECT * FROM patients WHERE id = $1', [patient_id]);
+    sendConfirmationEmail({
+      patient: patient.rows[0],
+      doctorName: doctor.rows[0].name,
+      appointment_date,
+      appointment_time,
+    });
+
     res.redirect('/appointments');
   } catch (err) {
     console.error(err);

@@ -11,6 +11,7 @@ services:
       DB_PORT: 5432
       DB_NAME: clinicdb
       SESSION_SECRET: a-long-random-string-change-this
+      NOTIFICATION_SERVICE_URL: http://notification-service:4000
     depends_on:
       db-seed:
         condition: service_completed_successfully
@@ -51,6 +52,16 @@ services:
     depends_on:
       flyway:
         condition: service_completed_successfully
+
+  notification-service:
+    build: ./notification-service
+    container_name: clinic-notification-service
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
 
 volumes:
   pgdata:

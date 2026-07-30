@@ -7,6 +7,7 @@ const doctorsRouter = require('./routes/doctors');
 const authRouter = require('./routes/auth');
 const homeRouter = require('./routes/home');
 const requireLogin = require('./middleware/auth');
+const reminderJob = require('./jobs/reminder-check');
 
 const app = express();
 const PORT = 3000;
@@ -38,4 +39,5 @@ app.use('/doctors', requireLogin, doctorsRouter);
 
 app.listen(PORT, () => {
   console.log(`Clinic app running at http://localhost:${PORT}`);
+  reminderJob.start();
 });

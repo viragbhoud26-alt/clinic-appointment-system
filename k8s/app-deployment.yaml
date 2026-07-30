@@ -71,3 +71,5 @@ spec:
                 secretKeyRef:
                   name: clinic-secret
                   key: SESSION_SECRET
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://clinic-notification-service:4000"
