@@ -26,6 +26,25 @@ if (!allowListEnabled()) {
 }
 
 const bot = new TelegramBot(TOKEN, { polling: true });
+
+// Telegram's Markdown parser throws a 400 on unbalanced _ / * / ` characters,
+// which the model's own text can easily contain (tool names, error fields,
+// quota metric names). Without a fallback, that throw was swallowing the
+// real answer entirely and replacing it with Telegram's own parse-error
+// message (see docs/artifact-log.md, AGENT-W?-BUG-0x). Retry once as plain
+// text rather than losing the content.
+async function safeSend(chatId, text, opts = {}) {
+  try {
+    return await bot.sendMessage(chatId, text, opts);
+  } catch (err) {
+    if (opts.parse_mode && /can't parse entities/i.test(err.message || "")) {
+      console.warn("[telegram] Markdown parse failed, retrying as plain text:", err.message);
+      return bot.sendMessage(chatId, text, { ...opts, parse_mode: undefined });
+    }
+    throw err;
+  }
+}
+
 console.log("AI Agent provisioner is running.");
 console.log(`LLM_PROVIDER=${PROVIDER}`);
 console.log(`APPLY_MODE=${process.env.APPLY_MODE || "dryrun"}`);
@@ -39,7 +58,7 @@ bot.on("message", async (msg) => {
 
   if (!isAuthorized(userId)) {
     console.warn(`[unauthorized] blocked request from user=${sender} id=${userId}`);
-    bot.sendMessage(chatId, `\ud83d\udeab Not authorized. Your Telegram user ID is \`${userId}\`.`, { parse_mode: "Markdown" });
+    safeSend(chatId, `\ud83d\udeab Not authorized. Your Telegram user ID is \`${userId}\`.`, { parse_mode: "Markdown" });
     return;
   }
 
@@ -52,7 +71,7 @@ bot.on("message", async (msg) => {
       return;
     }
     const summary = formatTraceForHumans(lastTurn.trace);
-    bot.sendMessage(chatId, `*Reasoning for:* "${lastTurn.userMessage}"\n\n${summary}`, { parse_mode: "Markdown" });
+    safeSend(chatId, `*Reasoning for:* "${lastTurn.userMessage}"\n\n${summary}`, { parse_mode: "Markdown" });
     return;
   }
 
@@ -83,7 +102,7 @@ bot.on("message", async (msg) => {
 
     console.log(`[trace] ${JSON.stringify(trace, null, 2)}`);
 
-    await bot.sendMessage(chatId, (finalText || "(no response text)") + "\n\n_Tip: send /why to see how I got here._", { parse_mode: "Markdown" });
+    await safeSend(chatId, (finalText || "(no response text)") + "\n\n_Tip: send /why to see how I got here._", { parse_mode: "Markdown" });
   } catch (err) {
     console.error("[agent_error]", err);
     await bot.sendMessage(chatId, `\u26a0\ufe0f Something went wrong: ${err.message}`);
