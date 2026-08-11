@@ -1,0 +1,19 @@
+{
+  "_comment": "Governance rules the agent must respect. Identical structure to the Week 0 Telegram bot's policy file.",
+  "maxPerRequest": {
+    "cpu": "2000m",
+    "memory": "2Gi",
+    "replicas": 5
+  },
+  "namespaces": {
+    "default": {
+      "quotaCpu": "4000m",
+      "quotaMemory": "8Gi"
+    }
+  },
+  "defaultNamespace": "default",
+  "requireApprovalAbove": {
+    "cpu": "1000m",
+    "memory": "1Gi"
+  }
+}

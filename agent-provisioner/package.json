@@ -1,0 +1,15 @@
+{
+  "name": "ai-agent-provisioner",
+  "version": "0.1.0",
+  "description": "Week 1: an AI agent (Claude tool-calling loop) replaces the rigid /provision command parser. Developers describe needs in plain language; the agent reasons about tool calls, but apply_manifest independently re-validates every request against policy regardless of the agent's own conclusions.",
+  "main": "src/agentBot.js",
+  "scripts": {
+    "start": "node src/agentBot.js",
+    "test": "node test/agent.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "@google/genai": "^2.16.0",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}

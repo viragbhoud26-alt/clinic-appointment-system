@@ -1,0 +1,11 @@
+{
+  "_comment": "The agent can ONLY trigger builds for services listed here. This is a closed allow-list, not a suggestion — trigger_build refuses anything not in this file, regardless of how the agent frames the request. Adding a service here is a deliberate human decision, same spirit as policy.json's namespace quotas.",
+  "services": {
+    "clinic-app": {
+      "owner": "viragbhoud26-alt",
+      "repo": "clinic-appointment-system",
+      "workflowFile": "ci.yml",
+      "ref": "main"
+    }
+  }
+}
