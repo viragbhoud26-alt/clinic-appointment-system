@@ -23,5 +23,11 @@
   "devDependencies": {
     "jest": "^30.4.2",
     "nodemon": "^3.1.14"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/agent-provisioner/"
+    ]
   }
 }
